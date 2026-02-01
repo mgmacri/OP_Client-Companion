@@ -1,3 +1,5 @@
+/// <reference types="jest" />
+
 import reducer, {
   CONSENT_REQUIRED_ERROR,
   grantConsent,

@@ -29,8 +29,11 @@ devDependencies:
     specifier: ^9.11.1
     version: 9.39.2
   '@types/jest':
-    specifier: ^29.5.12
+    specifier: ^29.5.14
     version: 29.5.14
+  '@types/mocha':
+    specifier: ^10.0.10
+    version: 10.0.10
   '@types/react':
     specifier: ^19.0.0
     version: 19.2.10
@@ -1405,6 +1408,10 @@ packages:
 
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
+    dev: true
+
+  /@types/mocha@10.0.10:
+    resolution: {integrity: sha512-xPyYSz1cMPnJQhl0CLMH68j3gprKZaTjG3s5Vi+fDgx+uhG9NOXwbVt52eFS8ECyXhyKcjDLCBEqBExKuiZb7Q==}
     dev: true
 
   /@types/node@25.2.0:
