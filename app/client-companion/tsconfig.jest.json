@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "verbatimModuleSyntax": false,
+    "esModuleInterop": true,
+    "types": ["jest", "node", "vite/client"],
+    "noEmit": true
+  },
+  "include": ["src", "redux", "sagas", "components", "src/__tests__"]
+}

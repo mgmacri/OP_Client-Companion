@@ -1,0 +1,167 @@
+{
+  "work_packages": [
+    {
+      "title": "Task: Mobile – Consent Gate",
+      "lane": "mobile",
+      "depends_on": [],
+      "skills_required": ["compliance-guardrails"],
+      "acceptance_criteria": [
+        "Client cannot proceed to any log entry form until they explicitly grant consent.",
+        "Consent is stored in Redux state and is required for any submit action.",
+        "Attempting to submit without consent produces a static, deterministic error message.",
+        "Consent status is included in the submission payload to the backend."
+      ],
+      "api_contract": null,
+      "state_shape": {
+        "logForm": {
+          "consent": "boolean",
+          "fields": "{ [fieldId: string]: string | number }",
+          "status": "\"idle\" | \"validating\" | \"queued\" | \"syncing\"",
+          "errors": "string[]"
+        }
+      }
+    },
+    {
+      "title": "Task: Backend – Store submitted_at_utc",
+      "lane": "backend",
+      "depends_on": [],
+      "skills_required": ["timestamps-utc", "compliance-guardrails"],
+      "acceptance_criteria": [
+        "When a log is created via POST /api/logs, submitted_at_utc is set on the server, in UTC.",
+        "The backend ignores any submitted_at_utc provided by the client.",
+        "submitted_at_utc is persisted in the SQL schema for ClientLogEntry.",
+        "Unit tests verify that submitted_at_utc is not null and is in UTC."
+      ],
+      "api_contract": {
+        "method": "POST",
+        "path": "/api/logs",
+        "request_fields": [
+          "client_id",
+          "log_type",
+          "fields",
+          "consent"
+        ],
+        "response_fields": [
+          "id",
+          "client_id",
+          "log_type",
+          "submitted_at_utc"
+        ]
+      },
+      "state_shape": null
+    },
+    {
+      "title": "Task: Backend – Pending Review Status on Create",
+      "lane": "backend",
+      "depends_on": [
+        "Task: Backend – Store submitted_at_utc"
+      ],
+      "skills_required": ["deterministic-note-synthesis", "compliance-guardrails"],
+      "acceptance_criteria": [
+        "Whenever a ClientLogEntry is created successfully, a DraftNote is created in the backend.",
+        "The DraftNote.status is always \"pending_review\" on creation.",
+        "The DraftNote is generated using template-based synthesis only, using note_placement from the log schema.",
+        "No DraftNote is ever created with status \"approved\" or \"rejected\" by default."
+      ],
+      "api_contract": {
+        "method": "POST",
+        "path": "/api/draft-notes",
+        "request_fields": [
+          "client_id",
+          "source_log_entry_id",
+          "template_id"
+        ],
+        "response_fields": [
+          "id",
+          "client_id",
+          "source_log_entry_id",
+          "status",
+          "created_at_utc"
+        ]
+      },
+      "state_shape": null
+    },
+    {
+      "title": "Task: Frontend – Localized Display",
+      "lane": "frontend",
+      "depends_on": [
+        "Task: Backend – Store submitted_at_utc"
+      ],
+      "skills_required": ["timestamps-utc"],
+      "acceptance_criteria": [
+        "Any submitted_at_utc timestamp received from the backend is rendered in the client’s local timezone.",
+        "No local time is ever sent back to the backend; only submitted_at_utc is used as the source of truth.",
+        "UI clearly indicates the date/time in a user-friendly localized format.",
+        "Tests or stories demonstrate that switching locale/timezone changes only the display, not the stored value."
+      ],
+      "api_contract": {
+        "method": "GET",
+        "path": "/api/logs",
+        "response_fields": [
+          "id",
+          "client_id",
+          "log_type",
+          "submitted_at_utc"
+        ]
+      },
+      "state_shape": {
+        "logList": {
+          "items": "Array<{ id: string; submitted_at_utc: string; local_display: string }>",
+          "isLoading": "boolean"
+        }
+      }
+    },
+    {
+      "title": "Task: Frontend – Show Pending Review Status",
+      "lane": "frontend",
+      "depends_on": [
+        "Task: Backend – Pending Review Status on Create"
+      ],
+      "skills_required": ["compliance-guardrails", "deterministic-note-synthesis"],
+      "acceptance_criteria": [
+        "Therapist-facing UI can list draft notes with their status.",
+        "Draft notes with status \"pending_review\" are visually distinct (e.g., badge or label).",
+        "No UI path auto-approves or auto-rejects a note.",
+        "If approve/reject buttons are present, they are stub-only and clearly marked as non-functional until backend support exists."
+      ],
+      "api_contract": {
+        "method": "GET",
+        "path": "/api/draft-notes?status=pending_review",
+        "response_fields": [
+          "id",
+          "client_id",
+          "source_log_entry_id",
+          "status",
+          "subjective_text",
+          "objective_text",
+          "created_at_utc"
+        ]
+      },
+      "state_shape": {
+        "draftNotes": {
+          "items": "Array<{ id: string; client_id: string; status: \"pending_review\" | \"approved\" | \"rejected\" }>",
+          "isLoading": "boolean"
+        }
+      }
+    },
+    {
+    "title": "Task: Mobile – Consent Gate",
+    "lane": "mobile",
+    "depends_on": [],
+    "skills_required": ["compliance-guardrails"],
+    "acceptance_criteria": [
+        "User must explicitly grant consent before any log can be created or submitted.",
+        "Consent is stored in app state and is required for all submit actions (online and queued).",
+        "Attempting to submit without consent yields a static, deterministic error string.",
+        "Consent boolean is included in every submission payload."
+    ],
+    "api_contract": null,
+    "state_shape": {
+        "consent": {
+        "granted": "boolean",
+        "error": "string | null"
+        }
+    }
+    }
+  ]
+}
