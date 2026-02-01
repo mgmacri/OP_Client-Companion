@@ -1,0 +1,759 @@
+[
+  {
+    "id": "I_kwDORF7kd87nWN8S",
+    "number": 52,
+    "title": "Task: Mobile – Consent Gate",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/52",
+    "labels": [
+      "mobile",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Story: Consent Required Before Submission",
+      "number": 51,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/51"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWN7n",
+    "number": 51,
+    "title": "Story: Consent Required Before Submission",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/51",
+    "labels": [
+      "mobile",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Timestamp Handling & Compliance Guardrails",
+      "number": 4,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/4"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWN6-",
+    "number": 50,
+    "title": "Task: Frontend – Localized Display",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/50",
+    "labels": [
+      "frontend",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: UTC Submission Timestamp",
+      "number": 48,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/48"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWN6Z",
+    "number": 49,
+    "title": "Task: Backend – Store submitted_at_utc",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/49",
+    "labels": [
+      "backend",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Story: UTC Submission Timestamp",
+      "number": 48,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/48"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWN5v",
+    "number": 48,
+    "title": "Story: UTC Submission Timestamp",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/48",
+    "labels": [
+      "backend",
+      "frontend",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Timestamp Handling & Compliance Guardrails",
+      "number": 4,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/4"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWN5I",
+    "number": 47,
+    "title": "Task: Frontend – Show Pending Review Status",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/47",
+    "labels": [
+      "frontend",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: Draft Notes Created as Pending Review",
+      "number": 45,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/45"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWN4k",
+    "number": 46,
+    "title": "Task: Backend – Pending Review Status on Create",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/46",
+    "labels": [
+      "backend",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Story: Draft Notes Created as Pending Review",
+      "number": 45,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/45"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWN3u",
+    "number": 45,
+    "title": "Story: Draft Notes Created as Pending Review",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/45",
+    "labels": [
+      "backend",
+      "frontend",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Note Draft Generation & Therapist Review",
+      "number": 3,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/3"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWN3S",
+    "number": 44,
+    "title": "Task: Backend – Field Mapping to SO Sections",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/44",
+    "labels": [
+      "backend",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: Deterministic Draft Note Synthesis",
+      "number": 42,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/42"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWN2p",
+    "number": 43,
+    "title": "Task: Backend – Template-Based Note Generation",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/43",
+    "labels": "backend",
+    "parent": {
+      "title": "Story: Deterministic Draft Note Synthesis",
+      "number": 42,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/42"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWN1t",
+    "number": 42,
+    "title": "Story: Deterministic Draft Note Synthesis",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/42",
+    "labels": [
+      "backend",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Note Draft Generation & Therapist Review",
+      "number": 3,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/3"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWN0y",
+    "number": 41,
+    "title": "Task: Backend – Idempotent Submission Handling",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/41",
+    "labels": [
+      "backend",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: Offline Encrypted Queue & Auto-Sync",
+      "number": 37,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/37"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWN0L",
+    "number": 40,
+    "title": "Task: Mobile – Auto-Sync Trigger",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/40",
+    "labels": "mobile",
+    "parent": {
+      "title": "Story: Offline Encrypted Queue & Auto-Sync",
+      "number": 37,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/37"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNzk",
+    "number": 39,
+    "title": "Task: Mobile – Queue Limit Enforcement",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/39",
+    "labels": [
+      "mobile",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: Offline Encrypted Queue & Auto-Sync",
+      "number": 37,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/37"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNy6",
+    "number": 38,
+    "title": "Task: Mobile – Encrypted Queue Storage",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/38",
+    "labels": [
+      "mobile",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Story: Offline Encrypted Queue & Auto-Sync",
+      "number": 37,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/37"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNyf",
+    "number": 37,
+    "title": "Story: Offline Encrypted Queue & Auto-Sync",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/37",
+    "labels": [
+      "mobile",
+      "backend",
+      "infra",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Client Log Persistence, Queueing, and Sync",
+      "number": 2,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/2"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNx3",
+    "number": 36,
+    "title": "Task: Mobile – Chronic Pain Consent Gate",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/36",
+    "labels": [
+      "mobile",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Story: Chronic Pain Log",
+      "number": 33,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/33"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNv2",
+    "number": 35,
+    "title": "Task: Mobile – Chronic Pain Validation",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/35",
+    "labels": [
+      "mobile",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: Chronic Pain Log",
+      "number": 33,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/33"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNvI",
+    "number": 34,
+    "title": "Task: Mobile – Chronic Pain Form UI",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/34",
+    "labels": "mobile",
+    "parent": {
+      "title": "Story: Chronic Pain Log",
+      "number": 33,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/33"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNuZ",
+    "number": 33,
+    "title": "Story: Chronic Pain Log",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/33",
+    "labels": [
+      "mobile",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Client Log Capture & Validation",
+      "number": 1,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/1"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNt3",
+    "number": 32,
+    "title": "Task: Mobile – Food Log Consent Gate",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/32",
+    "labels": [
+      "mobile",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Story: Food & Emotional Eating Log",
+      "number": 29,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/29"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNtY",
+    "number": 31,
+    "title": "Task: Mobile – Food Log Validation",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/31",
+    "labels": [
+      "mobile",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: Food & Emotional Eating Log",
+      "number": 29,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/29"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNsl",
+    "number": 30,
+    "title": "Task: Mobile – Food Log Form UI",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/30",
+    "labels": "mobile",
+    "parent": {
+      "title": "Story: Food & Emotional Eating Log",
+      "number": 29,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/29"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNr7",
+    "number": 29,
+    "title": "Story: Food & Emotional Eating Log",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/29",
+    "labels": [
+      "mobile",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Client Log Capture & Validation",
+      "number": 1,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/1"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNrJ",
+    "number": 28,
+    "title": "Task: Mobile – ERP Consent Gate",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/28",
+    "labels": [
+      "mobile",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Story: Exposure Hierarchy (ERP)",
+      "number": 25,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/25"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNqW",
+    "number": 27,
+    "title": "Task: Mobile – ERP Validation",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/27",
+    "labels": [
+      "mobile",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: Exposure Hierarchy (ERP)",
+      "number": 25,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/25"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNpb",
+    "number": 26,
+    "title": "Task: Mobile – ERP Form UI",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/26",
+    "labels": "mobile",
+    "parent": {
+      "title": "Story: Exposure Hierarchy (ERP)",
+      "number": 25,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/25"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNo1",
+    "number": 25,
+    "title": "Story: Exposure Hierarchy (ERP)",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/25",
+    "labels": [
+      "mobile",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Client Log Capture & Validation",
+      "number": 1,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/1"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNoI",
+    "number": 24,
+    "title": "Task: Mobile – Behavioral Activation Consent Gate",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/24",
+    "labels": [
+      "mobile",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Story: Behavioral Activation Log",
+      "number": 21,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/21"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNne",
+    "number": 23,
+    "title": "Task: Mobile – Behavioral Activation Validation",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/23",
+    "labels": [
+      "mobile",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: Behavioral Activation Log",
+      "number": 21,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/21"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNm0",
+    "number": 22,
+    "title": "Task: Mobile – Behavioral Activation Form UI",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/22",
+    "labels": "mobile",
+    "parent": {
+      "title": "Story: Behavioral Activation Log",
+      "number": 21,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/21"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNmJ",
+    "number": 21,
+    "title": "Story: Behavioral Activation Log",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/21",
+    "labels": [
+      "mobile",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Client Log Capture & Validation",
+      "number": 1,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/1"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNlg",
+    "number": 20,
+    "title": "Task: Mobile – Panic Log Consent Gate",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/20",
+    "labels": [
+      "mobile",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Story: Panic Attack Log",
+      "number": 17,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/17"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNk5",
+    "number": 19,
+    "title": "Task: Mobile – Panic Log Validation",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/19",
+    "labels": [
+      "mobile",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: Panic Attack Log",
+      "number": 17,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/17"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNkM",
+    "number": 18,
+    "title": "Task: Mobile – Panic Log Form UI",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/18",
+    "labels": "mobile",
+    "parent": {
+      "title": "Story: Panic Attack Log",
+      "number": 17,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/17"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNji",
+    "number": 17,
+    "title": "Story: Panic Attack Log",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/17",
+    "labels": [
+      "mobile",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Client Log Capture & Validation",
+      "number": 1,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/1"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNi3",
+    "number": 16,
+    "title": "Task: Mobile – Sleep Log Consent Gate",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/16",
+    "labels": [
+      "mobile",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Story: Sleep Log (CBT-I)",
+      "number": 13,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/13"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNiR",
+    "number": 15,
+    "title": "Task: Mobile – Sleep Log Validation",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/15",
+    "labels": [
+      "mobile",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: Sleep Log (CBT-I)",
+      "number": 13,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/13"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNhh",
+    "number": 14,
+    "title": "Task: Mobile – Sleep Log Form UI",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/14",
+    "labels": "mobile",
+    "parent": {
+      "title": "Story: Sleep Log (CBT-I)",
+      "number": 13,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/13"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNgt",
+    "number": 13,
+    "title": "Story: Sleep Log (CBT-I)",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/13",
+    "labels": [
+      "mobile",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Client Log Capture & Validation",
+      "number": 1,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/1"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNgN",
+    "number": 12,
+    "title": "Task: Mobile – CBT Consent Gate",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/12",
+    "labels": [
+      "mobile",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Story: CBT Thought Record Log",
+      "number": 9,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/9"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNfn",
+    "number": 11,
+    "title": "Task: Mobile – CBT Validation",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/11",
+    "labels": [
+      "mobile",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: CBT Thought Record Log",
+      "number": 9,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/9"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNfI",
+    "number": 10,
+    "title": "Task: Mobile – CBT Form UI",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/10",
+    "labels": "mobile",
+    "parent": {
+      "title": "Story: CBT Thought Record Log",
+      "number": 9,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/9"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNel",
+    "number": 9,
+    "title": "Story: CBT Thought Record Log",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/9",
+    "labels": [
+      "mobile",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Client Log Capture & Validation",
+      "number": 1,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/1"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNeD",
+    "number": 8,
+    "title": "Task: Mobile – Mood Diary Consent Gate",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/8",
+    "labels": [
+      "mobile",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Story: Mood Diary Log",
+      "number": 5,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/5"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNdm",
+    "number": 7,
+    "title": "Task: Mobile – Mood Diary Validation",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/7",
+    "labels": [
+      "mobile",
+      "testing"
+    ],
+    "parent": {
+      "title": "Story: Mood Diary Log",
+      "number": 5,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/5"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNc5",
+    "number": 6,
+    "title": "Task: Mobile – Mood Diary Form UI",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/6",
+    "labels": "mobile",
+    "parent": {
+      "title": "Story: Mood Diary Log",
+      "number": 5,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/5"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNcV",
+    "number": 5,
+    "title": "Story: Mood Diary Log",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/5",
+    "labels": [
+      "mobile",
+      "testing",
+      "compliance"
+    ],
+    "parent": {
+      "title": "Epic: Client Log Capture & Validation",
+      "number": 1,
+      "url": "https://github.com/mgmacri/OP_Client-Companion/issues/1"
+    }
+  },
+  {
+    "id": "I_kwDORF7kd87nWNcA",
+    "number": 4,
+    "title": "Epic: Timestamp Handling & Compliance Guardrails",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/4",
+    "labels": [
+      "mobile",
+      "backend",
+      "frontend",
+      "compliance"
+    ],
+    "parent": null
+  },
+  {
+    "id": "I_kwDORF7kd87nWNbW",
+    "number": 3,
+    "title": "Epic: Note Draft Generation & Therapist Review",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/3",
+    "labels": [
+      "backend",
+      "frontend",
+      "compliance"
+    ],
+    "parent": null
+  },
+  {
+    "id": "I_kwDORF7kd87nWNa6",
+    "number": 2,
+    "title": "Epic: Client Log Persistence, Queueing, and Sync",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/2",
+    "labels": [
+      "mobile",
+      "backend",
+      "infra",
+      "compliance"
+    ],
+    "parent": null
+  },
+  {
+    "id": "I_kwDORF7kd87nWNag",
+    "number": 1,
+    "title": "Epic: Client Log Capture & Validation",
+    "url": "https://github.com/mgmacri/OP_Client-Companion/issues/1",
+    "labels": [
+      "product",
+      "mobile",
+      "compliance"
+    ],
+    "parent": null
+  }
+]
