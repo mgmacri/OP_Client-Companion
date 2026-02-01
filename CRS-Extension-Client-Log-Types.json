@@ -1,0 +1,517 @@
+{
+  "section_title": "Client Log Types & Behavioral Requirements",
+  "extends_crs_version": "sign-off",
+  "shared_rules": [
+    {
+      "ref": "FR-002",
+      "rule": "Consent required before creating/submitting any log entry."
+    },
+    {
+      "ref": "Definitions.timestamp_storage",
+      "rule": "Store submitted_at_utc in UTC at Submit; display localized only."
+    },
+    {
+      "ref": "NFR-007",
+      "rule": "Deterministic demo: template-based note synthesis; static error strings."
+    },
+    {
+      "ref": "FR-005",
+      "rule": "Offline encrypted queue; max 50 queued submissions; auto-sync on connectivity restoration."
+    },
+    {
+      "ref": "FR-011/FR-016",
+      "rule": "All log-derived notes created as Pending Review drafts; therapist approval required for official record."
+    },
+    {
+      "ref": "Non-Goals",
+      "rule": "No diagnosis, no clinical interpretation, no real-time alerts/crisis handling."
+    }
+  ],
+  "log_types": [
+    {
+      "id": "mood_diary",
+      "name": "Mood Diary",
+      "target_conditions": [
+        "Depression",
+        "Bipolar Disorder"
+      ],
+      "required_fields": {
+        "time_of_day": {
+          "type": "select",
+          "allowed": [
+            "Morning",
+            "Afternoon",
+            "Evening"
+          ]
+        },
+        "mood_intensity": {
+          "type": "int",
+          "min": 1,
+          "max": 10,
+          "unit": "Likert"
+        },
+        "energy_level": {
+          "type": "int",
+          "min": 1,
+          "max": 10,
+          "unit": "Likert"
+        }
+      },
+      "optional_fields": {
+        "current_emotion": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 200
+        },
+        "trigger_context": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 500
+        }
+      },
+      "validation_order": [
+        "time_of_day",
+        "mood_intensity",
+        "energy_level"
+      ],
+      "note_placement": {
+        "subjective": [
+          "time_of_day",
+          "current_emotion",
+          "trigger_context"
+        ],
+        "objective": [
+          "mood_intensity",
+          "energy_level"
+        ]
+      },
+      "determinism": {
+        "note_synthesis": "template",
+        "errors": "static_strings"
+      }
+    },
+    {
+      "id": "cbt_thought_record",
+      "name": "CBT Thought Record",
+      "target_conditions": [
+        "Anxiety",
+        "Depression"
+      ],
+      "required_fields": {
+        "situation": {
+          "type": "textarea",
+          "min_len": 1,
+          "max_len": 2000
+        },
+        "auto_thought": {
+          "type": "textarea",
+          "min_len": 1,
+          "max_len": 2000
+        },
+        "belief_auto": {
+          "type": "int",
+          "min": 0,
+          "max": 100,
+          "unit": "Percentage"
+        },
+        "emotion_intensity": {
+          "type": "int",
+          "min": 0,
+          "max": 100,
+          "unit": "Percentage"
+        },
+        "belief_alt": {
+          "type": "int",
+          "min": 0,
+          "max": 100,
+          "unit": "Percentage"
+        }
+      },
+      "optional_fields": {
+        "distortion": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 200
+        },
+        "alt_thought": {
+          "type": "textarea",
+          "min_len": 1,
+          "max_len": 2000
+        }
+      },
+      "note_placement": {
+        "subjective": [
+          "situation",
+          "auto_thought",
+          "distortion",
+          "alt_thought"
+        ],
+        "objective": [
+          "belief_auto",
+          "emotion_intensity",
+          "belief_alt"
+        ]
+      },
+      "determinism": {
+        "note_synthesis": "template",
+        "errors": "static_strings"
+      }
+    },
+    {
+      "id": "sleep_log",
+      "name": "Sleep Log (CBT-I)",
+      "target_conditions": [
+        "Insomnia",
+        "Sleep Disorders"
+      ],
+      "required_fields": {
+        "bedtime": {
+          "type": "time"
+        },
+        "lights_out": {
+          "type": "time"
+        },
+        "wake_time": {
+          "type": "time"
+        },
+        "onset_latency": {
+          "type": "int",
+          "min": 0,
+          "unit": "Minutes"
+        },
+        "awakenings": {
+          "type": "int",
+          "min": 0,
+          "unit": "Count"
+        },
+        "sleep_quality": {
+          "type": "int",
+          "min": 1,
+          "max": 5,
+          "unit": "Likert"
+        },
+        "restedness": {
+          "type": "int",
+          "min": 1,
+          "max": 10,
+          "unit": "Likert"
+        }
+      },
+      "optional_fields": {
+        "substances": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 200
+        }
+      },
+      "constraints": {
+        "no_derived_metrics": true,
+        "no_time_ordering_enforcement": true
+      },
+      "note_placement": {
+        "subjective": [
+          "substances"
+        ],
+        "objective": [
+          "bedtime",
+          "lights_out",
+          "wake_time",
+          "onset_latency",
+          "awakenings",
+          "sleep_quality",
+          "restedness"
+        ]
+      },
+      "determinism": {
+        "note_synthesis": "template",
+        "errors": "static_strings"
+      }
+    },
+    {
+      "id": "panic_log",
+      "name": "Panic Attack Log",
+      "target_conditions": [
+        "Panic Disorder",
+        "GAD"
+      ],
+      "required_fields": {
+        "symptoms": {
+          "type": "textarea",
+          "min_len": 1,
+          "max_len": 2000
+        },
+        "thoughts": {
+          "type": "textarea",
+          "min_len": 1,
+          "max_len": 2000
+        },
+        "peak_distress": {
+          "type": "int",
+          "min": 0,
+          "max": 10,
+          "unit": "Likert"
+        }
+      },
+      "optional_fields": {
+        "trigger": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 200
+        },
+        "behavior": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 500
+        },
+        "duration": {
+          "type": "int",
+          "min": 0,
+          "unit": "Minutes"
+        }
+      },
+      "note_placement": {
+        "subjective": [
+          "trigger",
+          "symptoms",
+          "thoughts",
+          "behavior"
+        ],
+        "objective": [
+          "peak_distress",
+          "duration"
+        ]
+      },
+      "determinism": {
+        "note_synthesis": "template",
+        "errors": "static_strings"
+      }
+    },
+    {
+      "id": "behavioral_activation",
+      "name": "Behavioral Activation Log",
+      "target_conditions": [
+        "Depression"
+      ],
+      "required_fields": {
+        "time_block": {
+          "type": "time"
+        },
+        "activity": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 200
+        },
+        "mastery": {
+          "type": "int",
+          "min": 0,
+          "max": 10,
+          "unit": "Likert"
+        },
+        "pleasure": {
+          "type": "int",
+          "min": 0,
+          "max": 10,
+          "unit": "Likert"
+        }
+      },
+      "optional_fields": {},
+      "note_placement": {
+        "subjective": [
+          "activity"
+        ],
+        "objective": [
+          "time_block",
+          "mastery",
+          "pleasure"
+        ]
+      },
+      "determinism": {
+        "note_synthesis": "template",
+        "errors": "static_strings"
+      }
+    },
+    {
+      "id": "exposure_erp",
+      "name": "Exposure Hierarchy (ERP)",
+      "target_conditions": [
+        "OCD",
+        "Phobias",
+        "PTSD"
+      ],
+      "required_fields": {
+        "exposure_task": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 200
+        },
+        "pre_suds": {
+          "type": "int",
+          "min": 0,
+          "max": 100,
+          "unit": "SUDs"
+        },
+        "peak_suds": {
+          "type": "int",
+          "min": 0,
+          "max": 100,
+          "unit": "SUDs"
+        },
+        "post_suds": {
+          "type": "int",
+          "min": 0,
+          "max": 100,
+          "unit": "SUDs"
+        }
+      },
+      "optional_fields": {
+        "prediction": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 500
+        },
+        "outcome": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 500
+        }
+      },
+      "constraints": {
+        "no_delta_scoring": true
+      },
+      "note_placement": {
+        "subjective": [
+          "exposure_task",
+          "prediction",
+          "outcome"
+        ],
+        "objective": [
+          "pre_suds",
+          "peak_suds",
+          "post_suds"
+        ]
+      },
+      "determinism": {
+        "note_synthesis": "template",
+        "errors": "static_strings"
+      }
+    },
+    {
+      "id": "food_eating",
+      "name": "Food & Emotional Eating Log",
+      "target_conditions": [
+        "Eating Disorders",
+        "Emotional Eating"
+      ],
+      "required_fields": {
+        "food_item": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 200
+        },
+        "binge_purge": {
+          "type": "boolean",
+          "explicit_selection_required": true
+        },
+        "hunger": {
+          "type": "int",
+          "min": 1,
+          "max": 10,
+          "unit": "Likert"
+        },
+        "fullness": {
+          "type": "int",
+          "min": 1,
+          "max": 10,
+          "unit": "Likert"
+        }
+      },
+      "optional_fields": {
+        "context": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 200
+        },
+        "emotional_state": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 200
+        }
+      },
+      "validation_order": [
+        "food_item",
+        "binge_purge",
+        "hunger",
+        "fullness"
+      ],
+      "note_placement": {
+        "subjective": [
+          "food_item",
+          "context",
+          "emotional_state",
+          "binge_purge"
+        ],
+        "objective": [
+          "hunger",
+          "fullness"
+        ]
+      },
+      "determinism": {
+        "note_synthesis": "template",
+        "errors": "static_strings"
+      }
+    },
+    {
+      "id": "pain_log",
+      "name": "Chronic Pain Log",
+      "target_conditions": [
+        "Chronic Pain"
+      ],
+      "required_fields": {
+        "time": {
+          "type": "time"
+        },
+        "pain_intensity": {
+          "type": "int",
+          "min": 0,
+          "max": 10,
+          "unit": "Likert"
+        },
+        "interference": {
+          "type": "int",
+          "min": 0,
+          "max": 10,
+          "unit": "Likert"
+        },
+        "emotional_distress": {
+          "type": "int",
+          "min": 0,
+          "max": 10,
+          "unit": "Likert"
+        }
+      },
+      "optional_fields": {
+        "activity": {
+          "type": "string",
+          "min_len": 1,
+          "max_len": 200
+        }
+      },
+      "note_placement": {
+        "subjective": [
+          "activity"
+        ],
+        "objective": [
+          "time",
+          "pain_intensity",
+          "interference",
+          "emotional_distress"
+        ]
+      },
+      "determinism": {
+        "note_synthesis": "template",
+        "errors": "static_strings"
+      }
+    }
+  ],
+  "generated_at_utc": "2026-02-01T06:10:37Z"
+}
