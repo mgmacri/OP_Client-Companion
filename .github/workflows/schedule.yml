@@ -7,7 +7,7 @@ on:
 
 jobs:
   maintenance:
-    uses: mgmacri/OP_Client-Companion-Governance/.github/workflows/schedule.yml@3ab99a629a8cda1a1bf740bfb89827afc4047547
+    uses: mgmacri/OP_Client-Companion-Governance/.github/workflows/schedule.yml@ca441d52a40e54d1056f0b4a3a81e6fe903b7256
     with:
       node-version: "20"
       pnpm-version: "9"
