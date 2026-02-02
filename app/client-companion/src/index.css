@@ -30,6 +30,17 @@ body {
   min-height: 100vh;
 }
 
+input,
+textarea {
+  color: #213547;
+  background-color: #ffffff;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;

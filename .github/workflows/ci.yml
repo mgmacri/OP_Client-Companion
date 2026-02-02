@@ -2,53 +2,17 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-      - develop
-  pull_request:
+    branches: [main, develop]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  app-ci:
-    name: App CI (pnpm)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: app/client-companion
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # Install Node (without pnpm cache yet)
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      # Install pnpm so caching step can find it
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-          run_install: false
-
-      # Re-run setup-node with pnpm caching now that pnpm is available
-      - name: Setup Node (pnpm cache)
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "pnpm"
-          cache-dependency-path: app/client-companion/pnpm-lock.yaml
-
-      - name: Install deps
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Test
-        run: pnpm test -- --ci
+  ci:
+    uses: mgmacri/OP_Client-Companion-Governance/.github/workflows/ci.yml@3ab99a629a8cda1a1bf740bfb89827afc4047547
+    with:
+      node-version: "20"
+      pnpm-version: "9"
+      working-directory: "app/client-companion"
 
