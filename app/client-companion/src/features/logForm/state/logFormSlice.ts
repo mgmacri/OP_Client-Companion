@@ -15,6 +15,10 @@ export type LogFormState = {
 
 export type SubmissionRequest = {
   fields: Record<string, string | number>;
+  metadata?: {
+    id: string;
+    enqueued_at_utc: string;
+  };
 };
 
 export const CONSENT_REQUIRED_ERROR = "Cannot submit: consent not granted";
@@ -77,6 +81,14 @@ const logFormSlice = createSlice({
       state.errors = [];
       state.fields = action.payload.fields;
     },
+    enqueueSucceeded(state) {
+      state.status = "queued";
+      state.errors = [];
+    },
+    enqueueFailed(state, action: PayloadAction<string>) {
+      state.status = "idle";
+      state.errors = [action.payload];
+    },
     submissionPrepared(state) {
       state.status = state.status === "queued" ? "queued" : "syncing";
       state.errors = [];
@@ -109,6 +121,8 @@ export const {
   setFields,
   submitLogRequested,
   queueLogRequested,
+  enqueueSucceeded,
+  enqueueFailed,
   submissionPrepared,
   submissionFailed,
   submissionSucceeded,

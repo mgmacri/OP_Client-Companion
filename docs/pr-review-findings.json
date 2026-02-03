@@ -1,0 +1,172 @@
+{
+  "review_date": "2026-02-02",
+  "pr_title": "Offline Encrypted Queue Implementation",
+  "verdict": "REQUEST_CHANGES",
+  "verdict_rationale": "The PR is well-structured and passes all current tests, but violates the offline-encrypted-queue skill by not enforcing the max queue length of 50. This is a blocking compliance issue.",
+  "test_status": {
+    "passed": 8,
+    "failed": 0,
+    "suites": ["offline-queue.test.ts", "consent-gate.test.ts"]
+  },
+  "files_changed": [
+    ".gitignore",
+    "app/client-companion/src/features/logForm/queue/types.ts",
+    "app/client-companion/src/features/logForm/queue/idb.ts",
+    "app/client-companion/src/features/logForm/queue/crypto.ts",
+    "app/client-companion/src/features/logForm/queue/repository.ts",
+    "app/client-companion/src/features/logForm/sagas/queueSyncSaga.ts",
+    "app/client-companion/src/features/logForm/state/logFormSlice.ts",
+    "app/client-companion/src/__tests__/offline-queue.test.ts"
+  ],
+  "blocking_issues": [
+    {
+      "id": "BLOCK-001",
+      "severity": "blocking",
+      "category": "compliance",
+      "skill_violated": "offline-encrypted-queue",
+      "title": "Max queue length not enforced",
+      "description": "The offline-encrypted-queue skill requires a maximum queue length of 50. New entries must be rejected past this limit. Currently, enqueue() appends without checking length.",
+      "file": "app/client-companion/src/features/logForm/queue/repository.ts",
+      "lines": "63-67",
+      "fix": {
+        "description": "Add max queue length enforcement in enqueue()",
+        "code_sample": "export const MAX_QUEUE_LENGTH = 50;\nexport const QUEUE_FULL_ERROR = \"Offline queue is full\";\n\nexport const enqueue = async (item: OfflineQueueItem): Promise<void> => {\n  const current = await loadQueue();\n  if (current.length >= MAX_QUEUE_LENGTH) {\n    throw new Error(QUEUE_FULL_ERROR);\n  }\n  const next = [...current, item];\n  await saveQueue(next);\n};"
+      },
+      "test_required": true,
+      "test_description": "Add test for queue-full rejection when attempting to enqueue item #51"
+    }
+  ],
+  "correctness_findings": [
+    {
+      "id": "CORR-001",
+      "severity": "medium",
+      "category": "correctness",
+      "title": "Race condition in enqueue()",
+      "description": "enqueue() reads entire queue, appends, then writes. Under concurrent calls this is a race condition.",
+      "file": "app/client-companion/src/features/logForm/queue/repository.ts",
+      "lines": "63-67",
+      "fix": {
+        "description": "Consider using a mutex or atomic IDB transaction to prevent concurrent modification issues"
+      }
+    },
+    {
+      "id": "CORR-002",
+      "severity": "medium",
+      "category": "correctness",
+      "title": "Misleading type annotation in saga",
+      "description": "consentGranted typed as boolean | null but generator returns boolean or early-exits. The null is never actually yielded.",
+      "file": "app/client-companion/src/features/logForm/sagas/queueSyncSaga.ts",
+      "lines": "29",
+      "fix": {
+        "description": "Change type annotation from 'boolean | null' to 'boolean'",
+        "code_sample": "const consentGranted: boolean = yield* ensureConsentOrReject();"
+      }
+    },
+    {
+      "id": "CORR-003",
+      "severity": "minor",
+      "category": "correctness",
+      "title": "Potential buffer sharing in fromB64",
+      "description": "fromB64(stored).buffer may share underlying buffer with the Uint8Array. Could cause issues in edge cases.",
+      "file": "app/client-companion/src/features/logForm/queue/crypto.ts",
+      "lines": "44",
+      "fix": {
+        "description": "Use buffer slice to ensure isolated buffer",
+        "code_sample": "raw.buffer.slice(raw.byteOffset, raw.byteOffset + raw.byteLength)"
+      }
+    }
+  ],
+  "test_coverage_gaps": [
+    {
+      "id": "TEST-001",
+      "priority": "high",
+      "title": "Saga consent gate test missing",
+      "description": "No test that handleQueue dispatches enqueueFailed when consent is denied",
+      "recommended_test": "Test saga behavior when consent is not granted - should dispatch setConsentError"
+    },
+    {
+      "id": "TEST-002",
+      "priority": "high",
+      "title": "Saga enqueue flow integration test missing",
+      "description": "No integration test for saga → repository → IDB path",
+      "recommended_test": "Mock enqueue and verify handleQueue dispatches enqueueSucceeded or enqueueFailed appropriately"
+    },
+    {
+      "id": "TEST-003",
+      "priority": "high",
+      "title": "Queue max length test missing",
+      "description": "Enforcement not implemented, thus not tested",
+      "recommended_test": "Test that enqueue throws QUEUE_FULL_ERROR when queue has 50 items"
+    }
+  ],
+  "readability_suggestions": [
+    {
+      "id": "READ-001",
+      "severity": "minor",
+      "title": "QueuedSubmissionPayload type clarity",
+      "description": "Combines Record<...> with & { consent_granted }. Consider a stricter discriminated type or explicit fields for clarity.",
+      "file": "app/client-companion/src/features/logForm/queue/types.ts",
+      "lines": "1-2"
+    },
+    {
+      "id": "READ-002",
+      "severity": "minor",
+      "title": "withStore transaction handling comment",
+      "description": "withStore resolves on request.onsuccess but also has tx.oncomplete. This is correct but non-obvious. A brief comment would help.",
+      "file": "app/client-companion/src/features/logForm/queue/idb.ts",
+      "lines": "36-50"
+    },
+    {
+      "id": "READ-003",
+      "severity": "minor",
+      "title": "Empty catch swallows error",
+      "description": "Empty catch {} swallows the original error. Consider logging or chaining the cause for debugging.",
+      "file": "app/client-companion/src/features/logForm/sagas/queueSyncSaga.ts",
+      "lines": "54-56",
+      "fix": {
+        "code_sample": "} catch (error) {\n  console.error(\"Enqueue failed:\", error);\n  yield put(enqueueFailed(QUEUE_ENQUEUE_FAILED_ERROR));\n}"
+      }
+    }
+  ],
+  "compliance_checklist": [
+    { "rule": "Consent required before log creation", "status": "pass" },
+    { "rule": "No clinical interpretation", "status": "pass" },
+    { "rule": "Static error messages", "status": "pass" },
+    { "rule": "Encrypted at rest", "status": "pass" },
+    { "rule": "Max queue length = 50", "status": "fail" },
+    { "rule": "FIFO order preserved", "status": "pass" },
+    { "rule": "Retry metadata included", "status": "pass" }
+  ],
+  "action_items": {
+    "before_approval": [
+      {
+        "priority": 1,
+        "action": "Implement max queue length enforcement in repository.ts",
+        "blocking": true
+      },
+      {
+        "priority": 2,
+        "action": "Add test for queue-full rejection",
+        "blocking": true
+      }
+    ],
+    "recommended": [
+      {
+        "priority": 3,
+        "action": "Add saga integration tests for handleQueue"
+      },
+      {
+        "priority": 4,
+        "action": "Fix boolean | null type annotation in queueSyncSaga.ts"
+      },
+      {
+        "priority": 5,
+        "action": "Add mutex/lock for concurrent enqueue protection"
+      },
+      {
+        "priority": 6,
+        "action": "Add error logging in saga catch block"
+      }
+    ]
+  }
+}
