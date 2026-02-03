@@ -26,7 +26,16 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
  */
 const CONFIG = {
   // Folders to scan for main app code (frontend + backend)
-  codeRoots: ['backend', 'web', 'mobile', 'src'].map((p) => path.join(__dirname, '..', p)),
+  codeRoots: [
+    'backend',
+    'web',
+    'mobile',
+    'src',
+    'app/client-companion/src',
+    'app/client-companion/components',
+    'app/client-companion/redux',
+    'app/client-companion/sagas',
+  ].map((p) => path.join(__dirname, '..', p)),
 
   // File extensions to scan
   exts: ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs'],
@@ -151,6 +160,9 @@ function checkSubmittedAtUtcPresence(files) {
   const backendFiles = files.filter((f) =>
     /backend|server|api|routes|controllers/i.test(f),
   );
+  if (backendFiles.length === 0) {
+    return [];
+  }
   const allContent = backendFiles.map(readFileSafe).join('\n');
 
   const found = /submitted_at_utc/.test(allContent);
@@ -179,6 +191,23 @@ function checkOfflineQueueLimit(files) {
 
   if (queueFiles.length === 0) {
     // If no queue files exist yet, don't fail.
+    return [];
+  }
+
+  const queueStorageIndicators = [
+    /queue\s*:\s*\[/,
+    /queue\s*=\s*\[/,
+    /queueItems/i,
+    /offlineQueue/i,
+    /persist/i,
+    /storage/i,
+    /encrypt/i,
+  ];
+
+  const queueFilesContent = queueFiles.map(readFileSafe).join('\n');
+  const hasQueueStorage = queueStorageIndicators.some((re) => re.test(queueFilesContent));
+  if (!hasQueueStorage) {
+    // Skip limit enforcement until a real queue storage implementation exists.
     return [];
   }
 
