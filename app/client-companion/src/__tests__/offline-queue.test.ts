@@ -40,7 +40,7 @@ const createRequest = <T,>(result: T, oncomplete?: () => void) => {
 };
 
 const createFakeIndexedDb = () => {
-  const open = (name: string, _version?: number) => {
+  const open = (name: string) => {
     type MutableOpenRequest = IDBOpenDBRequest & { result: IDBDatabase | null };
     const request = {
       result: null as IDBDatabase | null,
