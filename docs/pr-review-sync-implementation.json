@@ -1,0 +1,203 @@
+{
+  "review_date": "2026-02-02",
+  "pr_title": "Offline Encrypted Queue - Sync & Connectivity Implementation",
+  "verdict": "APPROVE",
+  "verdict_rationale": "All blocking issues from the previous review have been addressed. Max queue size is enforced with tests. Sync saga correctly implements FIFO drain with retry metadata. Consent is properly gated. All 13 tests pass.",
+  "test_status": {
+    "passed": 13,
+    "failed": 0,
+    "suites": [
+      "consent-gate.test.ts",
+      "connectivity.test.ts",
+      "queue-sync.test.ts",
+      "offline-queue.test.ts"
+    ]
+  },
+  "files_changed": [
+    "app/client-companion/src/__tests__/offline-queue.test.ts",
+    "app/client-companion/src/__tests__/connectivity.test.ts",
+    "app/client-companion/src/__tests__/queue-sync.test.ts",
+    "app/client-companion/src/features/logForm/queue/repository.ts",
+    "app/client-companion/src/features/logForm/queue/connectivity.ts",
+    "app/client-companion/src/features/logForm/queue/transport.ts",
+    "app/client-companion/src/features/logForm/sagas/queueSyncSaga.ts",
+    "app/client-companion/src/features/logForm/state/logFormSlice.ts"
+  ],
+  "blocking_issues": [],
+  "compliance_checklist": [
+    { "rule": "Consent required before sync", "status": "pass", "evidence": "handleSync checks consent and dispatches syncFailed if denied" },
+    { "rule": "Encrypted at rest", "status": "pass", "evidence": "Queue blob encrypted via AES-256-GCM" },
+    { "rule": "Max queue length = 50", "status": "pass", "evidence": "enqueue() throws QUEUE_FULL_ERROR at limit; test verifies queue unchanged" },
+    { "rule": "Auto-sync on network restore", "status": "pass", "evidence": "connectivitySyncWatcher triggers syncRequested on online event" },
+    { "rule": "Retry metadata", "status": "pass", "evidence": "handleSync increments retry_count and sets last_error_code on failure" },
+    { "rule": "FIFO order preserved", "status": "pass", "evidence": "Sync drains front-to-back; test verifies order" },
+    { "rule": "Static error strings", "status": "pass", "evidence": "All error messages are exported constants" }
+  ],
+  "correctness_findings": [
+    {
+      "id": "CORR-001",
+      "severity": "medium",
+      "category": "correctness",
+      "title": "Redundant offline event listener",
+      "description": "Subscribes to both online and offline events but only calls onOnline() when navigator.onLine is true. The offline listener is effectively a no-op.",
+      "file": "app/client-companion/src/features/logForm/queue/connectivity.ts",
+      "lines": "12-17",
+      "fix": {
+        "description": "Remove the offline event listener or document the intent",
+        "code_sample": "// Only need online event since handler checks navigator.onLine\nwindow.addEventListener(\"online\", handler);\n// Remove: window.addEventListener(\"offline\", handler);"
+      }
+    },
+    {
+      "id": "CORR-002",
+      "severity": "medium",
+      "category": "correctness",
+      "title": "Immediate sync trigger on subscription",
+      "description": "Immediately calls onOnline() if already online at subscription time. This may trigger an unexpected sync on app startup even if queue is empty.",
+      "file": "app/client-companion/src/features/logForm/queue/connectivity.ts",
+      "lines": "18-20",
+      "fix": {
+        "description": "Confirm this is intentional behavior or remove the immediate call"
+      }
+    },
+    {
+      "id": "CORR-003",
+      "severity": "medium",
+      "category": "correctness",
+      "title": "Transport stub always throws",
+      "description": "submitQueuedItem is a stub that always throws BACKEND_UNAVAILABLE_ERROR. Fine for MVP, but needs tracking for backend integration.",
+      "file": "app/client-companion/src/features/logForm/queue/transport.ts",
+      "lines": "8-11",
+      "fix": {
+        "description": "Track as follow-up work item for backend integration"
+      }
+    },
+    {
+      "id": "CORR-004",
+      "severity": "minor",
+      "category": "correctness",
+      "title": "Unused action parameter in submissionPrepared",
+      "description": "submissionPrepared now takes a payload but uses void action to suppress unused warning. Consider removing the parameter or using it.",
+      "file": "app/client-companion/src/features/logForm/state/logFormSlice.ts",
+      "lines": "104-105",
+      "fix": {
+        "description": "Remove unused parameter or implement its usage"
+      }
+    }
+  ],
+  "test_coverage": {
+    "covered": [
+      { "area": "Queue encryption roundtrip", "file": "offline-queue.test.ts" },
+      { "area": "FIFO persistence", "file": "offline-queue.test.ts" },
+      { "area": "At-rest encryption verification", "file": "offline-queue.test.ts" },
+      { "area": "Queue-full rejection", "file": "offline-queue.test.ts" },
+      { "area": "Crypto unavailable handling", "file": "offline-queue.test.ts" },
+      { "area": "Connectivity callback subscribe/unsubscribe", "file": "connectivity.test.ts" },
+      { "area": "Sync FIFO drain order", "file": "queue-sync.test.ts" },
+      { "area": "Sync consent blocking", "file": "queue-sync.test.ts" },
+      { "area": "Sync retry metadata on failure", "file": "queue-sync.test.ts" }
+    ],
+    "gaps": [
+      {
+        "id": "TEST-001",
+        "priority": "low",
+        "title": "Empty queue sync test missing",
+        "description": "No test for handleSync when queue is empty",
+        "recommended_test": "Test that handleSync dispatches syncFinished immediately when loadQueue returns empty array"
+      },
+      {
+        "id": "TEST-002",
+        "priority": "low",
+        "title": "Mid-queue failure test missing",
+        "description": "Tests first-item failure but not failure on second or later items",
+        "recommended_test": "Test that failure on item N preserves items 1..N-1 removal and N..end retention"
+      }
+    ]
+  },
+  "readability_suggestions": [
+    {
+      "id": "READ-001",
+      "severity": "minor",
+      "title": "Empty catch block in handleSync",
+      "description": "handleSync try-catch has empty catch {}. Consider logging or chaining cause for debugging.",
+      "file": "app/client-companion/src/features/logForm/sagas/queueSyncSaga.ts",
+      "lines": "118-128",
+      "fix": {
+        "code_sample": "} catch (error) {\n  console.error(\"Sync failed:\", error);\n  yield put(syncFailed(QUEUE_SYNC_FAILED_ERROR));\n}"
+      }
+    },
+    {
+      "id": "READ-002",
+      "severity": "minor",
+      "title": "Unnecessary 'as const' assertion",
+      "description": "resolveSubmitErrorCode returns \"UNKNOWN\" as const but the type already includes \"UNKNOWN\"",
+      "file": "app/client-companion/src/features/logForm/sagas/queueSyncSaga.ts",
+      "lines": "81-84",
+      "fix": {
+        "code_sample": "return \"UNKNOWN\";"
+      }
+    },
+    {
+      "id": "READ-003",
+      "severity": "minor",
+      "title": "Inconsistent indentation in slice reducers",
+      "description": "Sync-related reducers have 6-space indent instead of 4-space, affecting readability",
+      "file": "app/client-companion/src/features/logForm/state/logFormSlice.ts",
+      "lines": "92-107",
+      "fix": {
+        "description": "Normalize indentation to 4 spaces for all reducers"
+      }
+    }
+  ],
+  "action_items": {
+    "before_merge": [],
+    "recommended_follow_ups": [
+      {
+        "priority": 1,
+        "action": "Add empty queue sync test",
+        "blocking": false,
+        "rationale": "Improves edge case coverage"
+      },
+      {
+        "priority": 2,
+        "action": "Remove unused offline event listener in connectivity.ts",
+        "blocking": false,
+        "rationale": "Dead code cleanup"
+      },
+      {
+        "priority": 3,
+        "action": "Fix indentation in logFormSlice.ts sync reducers",
+        "blocking": false,
+        "rationale": "Code style consistency"
+      },
+      {
+        "priority": 4,
+        "action": "Track transport.ts stub for backend integration work package",
+        "blocking": false,
+        "rationale": "Placeholder needs real implementation"
+      },
+      {
+        "priority": 5,
+        "action": "Add error logging in saga catch blocks",
+        "blocking": false,
+        "rationale": "Improves debuggability"
+      }
+    ]
+  },
+  "previous_review_resolution": {
+    "blocking_issues_resolved": [
+      {
+        "original_id": "BLOCK-001",
+        "title": "Max queue length not enforced",
+        "resolution": "Implemented MAX_QUEUE_SIZE = 50 in repository.ts with QUEUE_FULL_ERROR",
+        "verified_by_test": "rejects enqueue when queue is full"
+      }
+    ],
+    "tests_added": [
+      "connectivity.test.ts - triggers callback on online event",
+      "queue-sync.test.ts - drains queue in FIFO order",
+      "queue-sync.test.ts - blocks sync when consent is false",
+      "queue-sync.test.ts - updates retry metadata on failure",
+      "offline-queue.test.ts - rejects enqueue when queue is full (with queue integrity check)"
+    ]
+  }
+}

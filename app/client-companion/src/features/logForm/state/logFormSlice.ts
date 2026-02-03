@@ -89,7 +89,22 @@ const logFormSlice = createSlice({
       state.status = "idle";
       state.errors = [action.payload];
     },
-    submissionPrepared(state) {
+      syncRequested(state) {
+        state.status = "syncing";
+      },
+      syncStarted(state) {
+        state.status = "syncing";
+        state.errors = [];
+      },
+      syncFinished(state) {
+        state.status = "idle";
+        state.errors = [];
+      },
+      syncFailed(state, action: PayloadAction<string>) {
+        state.status = "idle";
+        state.errors = [action.payload];
+      },
+      submissionPrepared(state) {
       state.status = state.status === "queued" ? "queued" : "syncing";
       state.errors = [];
     },
@@ -123,6 +138,10 @@ export const {
   queueLogRequested,
   enqueueSucceeded,
   enqueueFailed,
+  syncRequested,
+  syncStarted,
+  syncFinished,
+  syncFailed,
   submissionPrepared,
   submissionFailed,
   submissionSucceeded,

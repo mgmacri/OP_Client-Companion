@@ -254,6 +254,9 @@ describe("offline encrypted queue", () => {
         last_error_code: null,
       })
     ).rejects.toThrow(repository.QUEUE_FULL_ERROR);
+
+    const loaded = await repository.loadQueue();
+    expect(loaded).toEqual(items);
   });
 
   it("returns static error string when crypto is unavailable", async () => {

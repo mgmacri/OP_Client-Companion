@@ -15,7 +15,7 @@ type QueueBlob = {
 };
 
 export const MAX_QUEUE_SIZE = 50;
-export const QUEUE_FULL_ERROR = "Offline queue is full";
+export const QUEUE_FULL_ERROR = "Queue is full (50 items max)";
 
 const serializeEncrypted = (payload: { ivB64: string; ctB64: string }) =>
   JSON.stringify(payload);
