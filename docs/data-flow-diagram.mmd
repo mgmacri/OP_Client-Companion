@@ -1,0 +1,206 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9', 'primaryTextColor': '#fff', 'primaryBorderColor': '#2d6cb5', 'lineColor': '#5c6bc0', 'secondaryColor': '#81c784', 'tertiaryColor': '#fff3e0'}}}%%
+
+flowchart TB
+    subgraph UserInput["📝 1. Client Data Entry"]
+        direction TB
+        
+        User((👤 Client))
+        
+        subgraph FormData["Form Payloads"]
+            MoodData["🎭 Mood Diary<br/>━━━━━━━━━━━━━<br/>• mood_rating: 1-10<br/>• emotions: string[]<br/>• triggers: string<br/>• coping_used: string<br/>• notes: string<br/>• logged_at_local: ISO8601"]
+            
+            CBTData["🧠 CBT Thought Record<br/>━━━━━━━━━━━━━<br/>• situation: string<br/>• automatic_thought: string<br/>• emotions: {name, intensity}[]<br/>• evidence_for: string<br/>• evidence_against: string<br/>• balanced_thought: string<br/>• outcome_emotions: {name, intensity}[]"]
+            
+            SleepData["😴 Sleep Log<br/>━━━━━━━━━━━━━<br/>• bedtime: ISO8601<br/>• wake_time: ISO8601<br/>• sleep_quality: 1-5<br/>• interruptions: number<br/>• notes: string"]
+            
+            GenericLog["📋 Other Log Types<br/>━━━━━━━━━━━━━<br/>• log_type: LogTypeEnum<br/>• payload: JSON<br/>• schema_version: string"]
+        end
+        
+        User -->|"fills out"| FormData
+    end
+    
+    subgraph ConsentCapture["🔒 2. Consent Gate"]
+        direction TB
+        
+        ConsentModal["Consent Modal<br/>━━━━━━━━━━━━━<br/>Display: Privacy notice<br/>+ Data usage terms"]
+        
+        ConsentPayload["ConsentRecord<br/>━━━━━━━━━━━━━<br/>• client_id: UUID<br/>• consent_type: 'log_submission'<br/>• granted: boolean<br/>• granted_at_local: ISO8601<br/>• version: string"]
+        
+        ConsentModal -->|"user accepts"| ConsentPayload
+    end
+    
+    FormData -->|"triggers"| ConsentModal
+    
+    subgraph ReduxState["📊 3. Redux State Management"]
+        direction TB
+        
+        LogFormState["logFormSlice State<br/>━━━━━━━━━━━━━<br/>• formData: FormPayload<br/>• isValid: boolean<br/>• validationErrors: string[]<br/>• consentGranted: boolean<br/>• submissionStatus: 'idle'|'pending'|'queued'|'synced'|'error'"]
+        
+        Actions["Redux Actions<br/>━━━━━━━━━━━━━<br/>→ setFormField(field, value)<br/>→ validateForm()<br/>→ grantConsent(consentRecord)<br/>→ submitLog()<br/>→ queueLog(queueItem)<br/>→ syncSuccess(serverId)<br/>→ syncFailure(error)"]
+        
+        LogFormState <-->|"dispatch/select"| Actions
+    end
+    
+    ConsentPayload -->|"dispatch grantConsent"| ReduxState
+    
+    subgraph QueueEntry["📦 4. Queue Item Creation"]
+        direction TB
+        
+        QueueItem["QueuedLogEntry<br/>━━━━━━━━━━━━━<br/>• queue_id: UUID (client-gen)<br/>• client_id: UUID<br/>• log_type: LogTypeEnum<br/>• payload: FormPayload<br/>• consent_record: ConsentRecord<br/>• created_at_local: ISO8601<br/>• retry_count: 0<br/>• status: 'pending'"]
+    end
+    
+    Actions -->|"submitLog()"| QueueItem
+    
+    subgraph OfflineStorage["💾 5. Offline Encrypted Queue (IndexedDB)"]
+        direction TB
+        
+        EncryptionProcess["🔐 Encryption Layer<br/>━━━━━━━━━━━━━<br/>Algorithm: AES-256-GCM<br/>Key: Device-bound<br/>IV: Random per entry"]
+        
+        IDBStore["IndexedDB Store: 'logQueue'<br/>━━━━━━━━━━━━━<br/>Key: queue_id<br/>Value: EncryptedBlob<br/>Index: status, created_at<br/>Max Items: 50"]
+        
+        QueueMetadata["Queue Metadata<br/>━━━━━━━━━━━━━<br/>• total_pending: number<br/>• oldest_entry: ISO8601<br/>• last_sync_attempt: ISO8601"]
+        
+        QueueItem -->|"encrypt"| EncryptionProcess
+        EncryptionProcess -->|"store"| IDBStore
+        IDBStore -.->|"tracks"| QueueMetadata
+    end
+    
+    subgraph SyncProcess["🔄 6. Sync Saga Process"]
+        direction TB
+        
+        ConnCheck["Connectivity Check<br/>━━━━━━━━━━━━━<br/>navigator.onLine<br/>+ heartbeat ping"]
+        
+        DecryptRead["Decrypt & Read<br/>━━━━━━━━━━━━━<br/>• Fetch pending items<br/>• Decrypt payloads<br/>• Order by created_at"]
+        
+        BackoffCalc["Retry Backoff<br/>━━━━━━━━━━━━━<br/>delay = min(1000 * 2^retry, 30000)<br/>max_retries: 5"]
+        
+        TransportPayload["HTTP Request Payload<br/>━━━━━━━━━━━━━<br/>POST /api/logs<br/>━━━━━━━━━━━━━<br/>Headers:<br/>• Authorization: Bearer JWT<br/>• Content-Type: application/json<br/>• X-Client-Queue-ID: UUID<br/>• X-Idempotency-Key: UUID<br/>━━━━━━━━━━━━━<br/>Body: QueuedLogEntry"]
+        
+        ConnCheck -->|"online"| DecryptRead
+        ConnCheck -->|"offline"| BackoffCalc
+        BackoffCalc -->|"retry"| ConnCheck
+        DecryptRead --> TransportPayload
+    end
+    
+    IDBStore -->|"saga watches"| SyncProcess
+    
+    subgraph APILayer["⚙️ 7. Backend API Processing"]
+        direction TB
+        
+        RequestValidation["Request Validation<br/>━━━━━━━━━━━━━<br/>• JWT verification<br/>• Schema validation (AJV)<br/>• Idempotency check<br/>• Rate limiting"]
+        
+        ServerTimestamp["Server Timestamp<br/>━━━━━━━━━━━━━<br/>submitted_at_utc = NOW()<br/>(Server authoritative)"]
+        
+        LogTransform["Log Transformation<br/>━━━━━━━━━━━━━<br/>ClientLogEntry {<br/>  id: UUID (server-gen)<br/>  client_id: UUID<br/>  log_type: LogTypeEnum<br/>  payload: JSON<br/>  logged_at_local: ISO8601<br/>  submitted_at_utc: ISO8601<br/>  consent_id: UUID<br/>  schema_version: string<br/>  created_at: ISO8601<br/>}"]
+        
+        TransportPayload -->|"POST /api/logs"| RequestValidation
+        RequestValidation -->|"valid"| ServerTimestamp
+        ServerTimestamp --> LogTransform
+    end
+    
+    subgraph DatabaseLayer["🗄️ 8. SQL Database Storage"]
+        direction TB
+        
+        ClientLogTable[("ClientLogEntry Table<br/>━━━━━━━━━━━━━<br/>PK: id (UUID)<br/>FK: client_id → clients<br/>FK: consent_id → consents<br/>━━━━━━━━━━━━━<br/>Indexes:<br/>• client_id + log_type<br/>• submitted_at_utc<br/>• status")]
+        
+        ConsentTable[("ConsentRecord Table<br/>━━━━━━━━━━━━━<br/>PK: id (UUID)<br/>FK: client_id → clients<br/>━━━━━━━━━━━━━<br/>• consent_type<br/>• granted<br/>• granted_at_utc<br/>• version")]
+        
+        AuditTable[("AuditLog Table<br/>━━━━━━━━━━━━━<br/>PK: id (UUID)<br/>━━━━━━━━━━━━━<br/>• entity_type<br/>• entity_id<br/>• action<br/>• actor_id<br/>• timestamp_utc<br/>• changes_json")]
+        
+        LogTransform -->|"INSERT"| ClientLogTable
+        LogTransform -->|"INSERT"| ConsentTable
+        LogTransform -->|"INSERT audit"| AuditTable
+    end
+    
+    subgraph NoteSynthesis["📝 9. Deterministic Note Synthesis"]
+        direction TB
+        
+        TemplateSelect["Template Selection<br/>━━━━━━━━━━━━━<br/>Based on log_type:<br/>• mood_diary → mood_template<br/>• cbt_record → cbt_template<br/>• sleep_log → sleep_template"]
+        
+        TemplateFill["Template Population<br/>━━━━━━━━━━━━━<br/>NO AI/ML inference<br/>Direct field mapping only<br/>━━━━━━━━━━━━━<br/>{{mood_rating}} → payload.mood_rating<br/>{{emotions}} → payload.emotions.join()<br/>{{date}} → logged_at_local"]
+        
+        DraftNoteEntity["DraftNote Entity<br/>━━━━━━━━━━━━━<br/>• id: UUID<br/>• client_id: UUID<br/>• source_log_ids: UUID[]<br/>• note_type: string<br/>• content: string<br/>• status: 'pending_review'<br/>• created_at_utc: ISO8601<br/>• therapist_id: null"]
+        
+        ClientLogTable -->|"trigger on insert"| TemplateSelect
+        TemplateSelect --> TemplateFill
+        TemplateFill --> DraftNoteEntity
+    end
+    
+    subgraph DraftStorage["📋 10. Draft Note Storage"]
+        direction TB
+        
+        DraftNoteTable[("DraftNote Table<br/>━━━━━━━━━━━━━<br/>PK: id (UUID)<br/>FK: client_id → clients<br/>FK: therapist_id → users<br/>━━━━━━━━━━━━━<br/>• status: pending_review |<br/>  approved | rejected<br/>• reviewed_at_utc<br/>• reviewer_notes")]
+        
+        DraftNoteEntity -->|"INSERT"| DraftNoteTable
+    end
+    
+    subgraph APIResponse["📤 11. API Response Flow"]
+        direction TB
+        
+        SuccessResponse["Success Response<br/>━━━━━━━━━━━━━<br/>HTTP 201 Created<br/>━━━━━━━━━━━━━<br/>{<br/>  server_id: UUID,<br/>  submitted_at_utc: ISO8601,<br/>  queue_id: UUID (echo),<br/>  status: 'received'<br/>}"]
+        
+        ErrorResponse["Error Response<br/>━━━━━━━━━━━━━<br/>HTTP 4xx/5xx<br/>━━━━━━━━━━━━━<br/>{<br/>  error_code: string,<br/>  message: string,<br/>  retry_allowed: boolean,<br/>  queue_id: UUID<br/>}"]
+    end
+    
+    ClientLogTable -->|"success"| SuccessResponse
+    RequestValidation -->|"invalid"| ErrorResponse
+    
+    subgraph ClientSync["✅ 12. Client Sync Completion"]
+        direction TB
+        
+        UpdateQueue["Update Queue Entry<br/>━━━━━━━━━━━━━<br/>status: 'synced'<br/>server_id: response.server_id<br/>synced_at: NOW()"]
+        
+        CleanupQueue["Queue Cleanup<br/>━━━━━━━━━━━━━<br/>• Remove synced entries<br/>• Update retry count on error<br/>• Mark failed after max retries"]
+        
+        StateUpdate["Redux State Update<br/>━━━━━━━━━━━━━<br/>→ syncSuccess(serverId)<br/>→ clearForm()<br/>→ showSuccessToast()"]
+        
+        SuccessResponse -->|"received"| UpdateQueue
+        UpdateQueue --> CleanupQueue
+        CleanupQueue --> StateUpdate
+        
+        ErrorResponse -->|"retryable"| BackoffCalc
+        ErrorResponse -->|"non-retryable"| CleanupQueue
+    end
+    
+    subgraph TherapistFlow["👨‍⚕️ 13. Therapist Review Flow"]
+        direction TB
+        
+        Therapist((👨‍⚕️ Therapist))
+        
+        FetchPending["GET /api/draft-notes?status=pending_review<br/>━━━━━━━━━━━━━<br/>Response: DraftNote[]<br/>+ associated ClientLogEntry[]"]
+        
+        ReviewUI["Review Interface<br/>━━━━━━━━━━━━━<br/>• View draft content<br/>• View source logs<br/>• Edit draft text<br/>• Approve / Reject"]
+        
+        ApprovalPayload["Approval Request<br/>━━━━━━━━━━━━━<br/>PATCH /api/draft-notes/:id<br/>━━━━━━━━━━━━━<br/>{<br/>  status: 'approved',<br/>  final_content: string,<br/>  reviewer_notes: string<br/>}"]
+        
+        Therapist -->|"requests"| FetchPending
+        DraftNoteTable -->|"query"| FetchPending
+        FetchPending --> ReviewUI
+        ReviewUI -->|"submits"| ApprovalPayload
+        ApprovalPayload -->|"UPDATE"| DraftNoteTable
+    end
+    
+    %% Data Type Legend
+    subgraph Legend["📚 Data Type Legend"]
+        direction LR
+        L1["🔵 User Input"]
+        L2["🟢 Processed Data"]
+        L3["🟠 Queued Data"]
+        L4["🔴 Stored Data"]
+        L5["🟣 API Payload"]
+    end
+    
+    %% Styling
+    classDef userInput fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef processed fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef queued fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef stored fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef apiPayload fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef legend fill:#fafafa,stroke:#9e9e9e,stroke-width:1px
+    
+    class UserInput,FormData userInput
+    class ReduxState,NoteSynthesis processed
+    class OfflineStorage,QueueEntry queued
+    class DatabaseLayer,DraftStorage stored
+    class APILayer,APIResponse,SyncProcess apiPayload
+    class Legend legend

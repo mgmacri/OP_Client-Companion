@@ -1,0 +1,30 @@
+{
+  "name": "op-client-companion-backend",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Minimal backend for OP_Client-Companion: /api/logs with UTC stamping + idempotency",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . --max-warnings=0"
+  },
+  "dependencies": {
+    "fastify": "^5.2.1",
+    "sql.js": "^1.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/sql.js": "^1.4.9",
+    "eslint": "^9.11.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.9"
+  }
+}
