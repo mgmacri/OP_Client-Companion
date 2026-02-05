@@ -25,9 +25,97 @@
 
 ## 🏗️ Architecture
 
-![OP_Client-Companion Architecture](docs/architecture-diagram.png)
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#149C88', 'primaryTextColor': '#fff', 'primaryBorderColor': '#274357', 'lineColor': '#274357', 'secondaryColor': '#FDAC53', 'tertiaryColor': '#EDE3D2'}}}%%
 
-> 📄 Diagram source: [docs/architecture-diagram.mmd](docs/architecture-diagram.mmd) (Mermaid syntax)
+flowchart TB
+    subgraph ClientPortal["👤 Client Portal"]
+        direction TB
+        ViewTasks["View Assigned Tasks"]
+        DynamicForm["Dynamic Log Form"]
+        Submit["Submit Entry"]
+        
+        ViewTasks --> DynamicForm
+        DynamicForm --> Submit
+    end
+    
+    subgraph PractitionerPortal["👨‍⚕️ Practitioner Portal"]
+        direction TB
+        Dashboard["Dashboard<br/>Stats & Overview"]
+        ClientMgmt["Client Management<br/>Add / View / Delete"]
+        TaskAssign["Task Assignment<br/>8 Log Types"]
+        EntryReview["Entry Review<br/>View Details"]
+        
+        Dashboard --> ClientMgmt
+        ClientMgmt --> TaskAssign
+        ClientMgmt --> EntryReview
+    end
+    
+    subgraph Storage["💾 localStorage"]
+        direction LR
+        Clients[(Clients)]
+        Assignments[(Assignments)]
+        Entries[(Log Entries)]
+    end
+    
+    Submit --> Entries
+    TaskAssign --> Assignments
+    ClientMgmt --> Clients
+    
+    Clients --> Dashboard
+    Assignments --> Dashboard
+    Entries --> Dashboard
+    Assignments --> ViewTasks
+    
+    subgraph LogTypes["📋 8 Log Types"]
+        direction LR
+        L1["Mood Diary"]
+        L2["CBT Thought Record"]
+        L3["Sleep Log"]
+        L4["Panic Log"]
+        L5["Behavioral Activation"]
+        L6["Exposure Hierarchy"]
+        L7["Gratitude Journal"]
+        L8["Anger Management"]
+    end
+    
+    LogTypes -.-> TaskAssign
+    LogTypes -.-> DynamicForm
+```
+
+> 📄 Full diagram source: [docs/architecture-diagram.mmd](docs/architecture-diagram.mmd)
+
+### Data Flow
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#149C88', 'primaryTextColor': '#fff', 'primaryBorderColor': '#274357', 'lineColor': '#274357', 'secondaryColor': '#FDAC53', 'tertiaryColor': '#EDE3D2'}}}%%
+
+flowchart LR
+    subgraph Practitioner["👨‍⚕️ Practitioner Actions"]
+        P1[Add Client] --> P2[Assign Log Task]
+        P2 --> P3[Review Entries]
+    end
+
+    subgraph Storage["💾 localStorage"]
+        C[(Clients)]
+        A[(Assignments)]
+        E[(Log Entries)]
+    end
+
+    subgraph Client["👤 Client Actions"]
+        C1[View Tasks] --> C2[Complete Form]
+        C2 --> C3[Submit Entry]
+    end
+
+    P1 --> C
+    P2 --> A
+    A --> C1
+    C3 --> E
+    E --> P3
+    C --> Practitioner
+```
+
+> 📄 Full diagram source: [docs/data-flow-diagram.mmd](docs/data-flow-diagram.mmd)
 
 ---
 
