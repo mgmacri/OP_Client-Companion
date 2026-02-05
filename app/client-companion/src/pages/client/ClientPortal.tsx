@@ -1,31 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
-import { 
-  getClientById, 
-  getActiveAssignmentsByClient, 
-  addLogEntry,
-  setCurrentClientId 
-} from '../../services/storage';
-import type { Client, LogAssignment, LogType, LogEntry } from '../../types/models';
+import { useAppDispatch, useAppSelector } from '../../app/store';
+import { selectClientById } from '../../features/clients/state/clientsSlice';
+import { selectActiveAssignmentsByClient } from '../../features/assignments/state/assignmentsSlice';
+import { addEntryRequested } from '../../features/entries/state/entriesSlice';
+import { setCurrentClientId } from '../../services/storage';
+import type { LogAssignment, LogType } from '../../types/models';
 import { LOG_TYPES } from '../../data/logTypes';
 import DynamicLogForm from '../../components/DynamicLogForm';
 
 const ClientPortal: React.FC = () => {
   const { clientId } = useParams<{ clientId: string }>();
-  const [client, setClient] = useState<Client | null>(null);
-  const [assignments, setAssignments] = useState<LogAssignment[]>([]);
+  const dispatch = useAppDispatch();
+  
+  const client = useAppSelector(selectClientById(clientId || ''));
+  const assignments = useAppSelector(selectActiveAssignmentsByClient(clientId || ''));
   const [selectedAssignment, setSelectedAssignment] = useState<LogAssignment | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
     if (clientId) {
-      const foundClient = getClientById(clientId);
-      if (foundClient) {
-        setClient(foundClient);
-        setCurrentClientId(clientId);
-        setAssignments(getActiveAssignmentsByClient(clientId));
-      }
+      setCurrentClientId(clientId);
     }
   }, [clientId]);
 
@@ -36,16 +31,13 @@ const ClientPortal: React.FC = () => {
   const handleSubmitLog = (fields: Record<string, string | number | boolean>) => {
     if (!selectedAssignment || !clientId) return;
 
-    const entry: LogEntry = {
-      id: uuidv4(),
+    dispatch(addEntryRequested({
       clientId,
       logTypeId: selectedAssignment.logTypeId,
       assignmentId: selectedAssignment.id,
       fields,
-      submittedAt: new Date().toISOString(),
-    };
+    }));
 
-    addLogEntry(entry);
     setSubmitSuccess(true);
     setTimeout(() => {
       setSubmitSuccess(false);

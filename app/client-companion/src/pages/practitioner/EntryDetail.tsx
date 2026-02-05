@@ -1,27 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getLogEntries, getClientById } from '../../services/storage';
-import type { LogEntry, Client } from '../../types/models';
+import { useAppSelector } from '../../app/store';
+import { selectEntryById } from '../../features/entries/state/entriesSlice';
+import { selectClientById } from '../../features/clients/state/clientsSlice';
 import { LOG_TYPES } from '../../data/logTypes';
 
 const EntryDetail: React.FC = () => {
   const { entryId } = useParams<{ entryId: string }>();
-  const [entry, setEntry] = useState<LogEntry | null>(null);
-  const [client, setClient] = useState<Client | null>(null);
-
-  useEffect(() => {
-    if (entryId) {
-      const entries = getLogEntries();
-      const foundEntry = entries.find(e => e.id === entryId);
-      if (foundEntry) {
-        setEntry(foundEntry);
-        const foundClient = getClientById(foundEntry.clientId);
-        if (foundClient) {
-          setClient(foundClient);
-        }
-      }
-    }
-  }, [entryId]);
+  const entry = useAppSelector(selectEntryById(entryId || ''));
+  const client = useAppSelector(selectClientById(entry?.clientId || ''));
 
   const getLogType = (logTypeId: string) => {
     return LOG_TYPES.find(lt => lt.id === logTypeId);

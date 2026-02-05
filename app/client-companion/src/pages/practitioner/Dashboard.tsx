@@ -1,31 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getClients, getAssignments, getLogEntries, initializeDemoData } from '../../services/storage';
+import { useAppSelector } from '../../app/store';
+import { selectClients } from '../../features/clients/state/clientsSlice';
+import { selectAssignments } from '../../features/assignments/state/assignmentsSlice';
+import { selectEntries } from '../../features/entries/state/entriesSlice';
 import type { Client, LogAssignment, LogEntry } from '../../types/models';
 import { LOG_TYPES } from '../../data/logTypes';
 import '../../styles/theme.css';
 
 const PractitionerDashboard: React.FC = () => {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [assignments, setAssignments] = useState<LogAssignment[]>([]);
-  const [entries, setEntries] = useState<LogEntry[]>([]);
+  const clients = useAppSelector(selectClients);
+  const assignments = useAppSelector(selectAssignments);
+  const entries = useAppSelector(selectEntries);
   const location = useLocation();
 
-  useEffect(() => {
-    initializeDemoData();
-    loadData();
-  }, [location]);
-
-  const loadData = () => {
-    setClients(getClients());
-    setAssignments(getAssignments());
-    setEntries(getLogEntries());
-  };
+  // Force re-render on navigation
+  React.useEffect(() => {}, [location]);
 
   const getClientStats = (clientId: string) => {
-    const clientAssignments = assignments.filter(a => a.clientId === clientId);
-    const clientEntries = entries.filter(e => e.clientId === clientId);
-    const activeAssignments = clientAssignments.filter(a => a.isActive);
+    const clientAssignments = assignments.filter((a: LogAssignment) => a.clientId === clientId);
+    const clientEntries = entries.filter((e: LogEntry) => e.clientId === clientId);
+    const activeAssignments = clientAssignments.filter((a: LogAssignment) => a.isActive);
     
     return {
       totalAssignments: clientAssignments.length,
@@ -60,7 +55,7 @@ const PractitionerDashboard: React.FC = () => {
           <div className="stat-label">Total Clients</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value">{assignments.filter(a => a.isActive).length}</div>
+          <div className="stat-value">{assignments.filter((a: LogAssignment) => a.isActive).length}</div>
           <div className="stat-label">Active Assignments</div>
         </div>
         <div className="stat-card">
@@ -92,7 +87,7 @@ const PractitionerDashboard: React.FC = () => {
           </div>
         ) : (
           <div className="client-grid">
-            {clients.slice(0, 6).map(client => {
+            {clients.slice(0, 6).map((client: Client) => {
               const stats = getClientStats(client.id);
               return (
                 <div key={client.id} className="client-card card">
@@ -159,8 +154,8 @@ const PractitionerDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {entries.slice(-5).reverse().map(entry => {
-                  const client = clients.find(c => c.id === entry.clientId);
+                {[...entries].sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()).slice(0, 5).map((entry: LogEntry) => {
+                  const client = clients.find((c: Client) => c.id === entry.clientId);
                   return (
                     <tr key={entry.id}>
                       <td>{client?.name || 'Unknown'}</td>

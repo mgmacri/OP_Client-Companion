@@ -1,49 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
-import { getClients, addClient, deleteClient } from '../../services/storage';
+import { useAppDispatch, useAppSelector } from '../../app/store';
+import { selectClients, addClientRequested, deleteClientRequested } from '../../features/clients/state/clientsSlice';
 import type { Client } from '../../types/models';
 
 const ClientsList: React.FC = () => {
-  const [clients, setClients] = useState<Client[]>([]);
+  const dispatch = useAppDispatch();
+  const clients = useAppSelector(selectClients);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newClient, setNewClient] = useState({ name: '', email: '', notes: '' });
   const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    loadClients();
-  }, []);
-
-  const loadClients = () => {
-    setClients(getClients());
-  };
 
   const handleAddClient = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newClient.name.trim() || !newClient.email.trim()) return;
 
-    const client: Client = {
-      id: uuidv4(),
+    dispatch(addClientRequested({
       name: newClient.name.trim(),
       email: newClient.email.trim(),
       notes: newClient.notes.trim() || undefined,
-      createdAt: new Date().toISOString(),
-    };
+    }));
 
-    addClient(client);
     setNewClient({ name: '', email: '', notes: '' });
     setShowAddModal(false);
-    loadClients();
   };
 
   const handleDeleteClient = (clientId: string) => {
     if (confirm('Are you sure you want to delete this client? This will also delete all their assignments and log entries.')) {
-      deleteClient(clientId);
-      loadClients();
+      dispatch(deleteClientRequested(clientId));
     }
   };
 
-  const filteredClients = clients.filter(client =>
+  const filteredClients = clients.filter((client: Client) =>
     client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.email.toLowerCase().includes(searchTerm.toLowerCase())
   );

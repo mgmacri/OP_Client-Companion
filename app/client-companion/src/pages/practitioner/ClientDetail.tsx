@@ -1,32 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../app/store';
+import { selectClientById } from '../../features/clients/state/clientsSlice';
 import { 
-  getClientById, 
-  getAssignmentsByClient, 
-  getLogEntriesByClient,
-  updateAssignment,
-  deleteAssignment 
-} from '../../services/storage';
-import type { Client, LogAssignment, LogEntry } from '../../types/models';
+  selectAssignmentsByClient, 
+  updateAssignmentRequested, 
+  deleteAssignmentRequested 
+} from '../../features/assignments/state/assignmentsSlice';
+import { selectEntriesByClient } from '../../features/entries/state/entriesSlice';
+import type { LogAssignment, LogEntry } from '../../types/models';
 import { LOG_TYPES } from '../../data/logTypes';
 
 const ClientDetail: React.FC = () => {
   const { clientId } = useParams<{ clientId: string }>();
-  const [client, setClient] = useState<Client | null>(null);
-  const [assignments, setAssignments] = useState<LogAssignment[]>([]);
-  const [entries, setEntries] = useState<LogEntry[]>([]);
+  const dispatch = useAppDispatch();
+  
+  const client = useAppSelector(selectClientById(clientId || ''));
+  const assignments = useAppSelector(selectAssignmentsByClient(clientId || ''));
+  const entries = useAppSelector(selectEntriesByClient(clientId || ''));
   const [activeTab, setActiveTab] = useState<'assignments' | 'entries'>('assignments');
-
-  useEffect(() => {
-    if (clientId) {
-      const foundClient = getClientById(clientId);
-      if (foundClient) {
-        setClient(foundClient);
-        setAssignments(getAssignmentsByClient(clientId));
-        setEntries(getLogEntriesByClient(clientId));
-      }
-    }
-  }, [clientId]);
 
   const getLogTypeName = (logTypeId: string) => {
     const logType = LOG_TYPES.find(lt => lt.id === logTypeId);
@@ -34,15 +26,12 @@ const ClientDetail: React.FC = () => {
   };
 
   const toggleAssignmentStatus = (assignment: LogAssignment) => {
-    const updated = { ...assignment, isActive: !assignment.isActive };
-    updateAssignment(updated);
-    setAssignments(getAssignmentsByClient(clientId!));
+    dispatch(updateAssignmentRequested({ ...assignment, isActive: !assignment.isActive }));
   };
 
   const handleDeleteAssignment = (assignmentId: string) => {
     if (confirm('Are you sure you want to remove this assignment?')) {
-      deleteAssignment(assignmentId);
-      setAssignments(getAssignmentsByClient(clientId!));
+      dispatch(deleteAssignmentRequested(assignmentId));
     }
   };
 
@@ -149,7 +138,7 @@ const ClientDetail: React.FC = () => {
                     </div>
                     <div className="detail-row">
                       <span className="detail-label">Entries:</span>
-                      <span>{entries.filter(e => e.assignmentId === assignment.id).length}</span>
+                      <span>{entries.filter((e: LogEntry) => e.assignmentId === assignment.id).length}</span>
                     </div>
                   </div>
                   <div className="assignment-actions">
@@ -193,7 +182,7 @@ const ClientDetail: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {entries.slice().reverse().map(entry => (
+                  {entries.slice().reverse().map((entry: LogEntry) => (
                     <tr key={entry.id}>
                       <td>
                         <span className="badge badge-primary">

@@ -1,48 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
-import { getClientById, addAssignment, getAssignmentsByClient } from '../../services/storage';
-import type { Client, LogAssignment } from '../../types/models';
+import { useAppDispatch, useAppSelector } from '../../app/store';
+import { selectClientById } from '../../features/clients/state/clientsSlice';
+import { selectAssignmentsByClient, addAssignmentRequested } from '../../features/assignments/state/assignmentsSlice';
+import type { LogAssignment } from '../../types/models';
 import { LOG_TYPES } from '../../data/logTypes';
 
 const AssignTask: React.FC = () => {
   const { clientId } = useParams<{ clientId: string }>();
   const navigate = useNavigate();
-  const [client, setClient] = useState<Client | null>(null);
-  const [existingAssignments, setExistingAssignments] = useState<LogAssignment[]>([]);
+  const dispatch = useAppDispatch();
+  
+  const client = useAppSelector(selectClientById(clientId || ''));
+  const existingAssignments = useAppSelector(selectAssignmentsByClient(clientId || ''));
   const [selectedLogType, setSelectedLogType] = useState('');
   const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'as-needed'>('daily');
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
 
-  useEffect(() => {
-    if (clientId) {
-      const foundClient = getClientById(clientId);
-      if (foundClient) {
-        setClient(foundClient);
-        setExistingAssignments(getAssignmentsByClient(clientId));
-      }
-    }
-  }, [clientId]);
-
   const isAlreadyAssigned = (logTypeId: string) => {
-    return existingAssignments.some(a => a.logTypeId === logTypeId && a.isActive);
+    return existingAssignments.some((a: LogAssignment) => a.logTypeId === logTypeId && a.isActive);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedLogType || !clientId) return;
 
-    const assignment: LogAssignment = {
-      id: uuidv4(),
+    dispatch(addAssignmentRequested({
       clientId,
       logTypeId: selectedLogType,
       frequency,
       startDate: new Date(startDate).toISOString(),
       isActive: true,
-      createdAt: new Date().toISOString(),
-    };
+    }));
 
-    addAssignment(assignment);
     navigate(`/practitioner/clients/${clientId}`);
   };
 

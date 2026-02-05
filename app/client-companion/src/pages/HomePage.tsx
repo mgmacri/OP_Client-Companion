@@ -1,20 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { getClients, initializeDemoData, resetAndReseed } from '../services/storage';
+import { useAppDispatch, useAppSelector } from '../app/store';
+import { selectClients, loadClientsRequested } from '../features/clients/state/clientsSlice';
+import { loadAssignmentsRequested } from '../features/assignments/state/assignmentsSlice';
+import { loadEntriesRequested } from '../features/entries/state/entriesSlice';
+import { initializeDemoData, resetAndReseed } from '../services/storage';
+import type { Client } from '../types/models';
 
 const HomePage: React.FC = () => {
-  const [clients, setClients] = React.useState(getClients());
+  const dispatch = useAppDispatch();
+  const clients = useAppSelector(selectClients);
 
   // Initialize demo data on load
   React.useEffect(() => {
     initializeDemoData();
-    setClients(getClients());
-  }, []);
+    dispatch(loadClientsRequested());
+    dispatch(loadAssignmentsRequested());
+    dispatch(loadEntriesRequested());
+  }, [dispatch]);
 
   const handleReseed = () => {
     if (confirm('This will reset all data and reload with demo entries. Continue?')) {
       resetAndReseed();
-      setClients(getClients());
+      dispatch(loadClientsRequested());
+      dispatch(loadAssignmentsRequested());
+      dispatch(loadEntriesRequested());
       window.location.reload();
     }
   };
@@ -63,7 +73,7 @@ const HomePage: React.FC = () => {
                   }}
                 >
                   <option value="">Choose a client...</option>
-                  {clients.map(client => (
+                  {clients.map((client: Client) => (
                     <option key={client.id} value={client.id}>
                       {client.name}
                     </option>

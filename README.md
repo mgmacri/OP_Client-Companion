@@ -7,6 +7,23 @@
 
 ---
 
+## ⚠️ MVP Status
+
+This repository contains a **Minimum Viable Product** intended to demonstrate core functionality. The current implementation uses `localStorage` for data persistence and does not yet include the full security, encryption, or backend infrastructure required for production use with real patient data.
+
+**For compliance documentation, threat models, and production architecture:**  
+👉 See [**OP_Client-Companion-Governance**](https://github.com/mgmacri/OP_Client-Companion-Governance)
+
+We are building this application with a **compliance-first mindset** from day one. The governance repo contains:
+
+- **Canadian Provincial PHI Compliance Gates** (PHIPA, PIPEDA, HIA, etc.)
+- **STRIDE Threat Modeling** via [Threagile](https://threagile.io/)
+- **LINDDUN Privacy Threat Modeling** for systematic privacy risk analysis
+- **Data Flow Inventories** and minimization plans
+- **[Ethyca Fides](https://ethyca.com/fides)** integration for automated privacy compliance
+
+---
+
 ## 📋 Overview
 
 **OP_Client-Companion** is a React Native + Web application designed to support mental health practitioners and their clients by enabling structured, schema-driven client log collection (e.g., Mood Diaries, CBT Thought Records, Sleep Logs) with a deterministic, compliance-first architecture.
@@ -227,17 +244,6 @@ This project enforces strict compliance guardrails via code review, CI checks, a
 | `deterministic-note-synthesis` | Template-based note generation only; no AI summarization |
 | `offline-encrypted-queue` | Encrypted local queue with 50-item limit |
 | `test-coverage-critical-workflows` | Critical paths require unit + integration tests |
-
-### ❌ Explicit Non-Goals
-
-These features are **intentionally excluded** from scope:
-
-- Crisis detection or escalation logic
-- Clinical interpretations or diagnosis
-- AI-based summarization of client logs
-- Non-deterministic draft note generation
-
----
 
 ## 🔐 Privacy & Security Considerations
 
